@@ -11,3 +11,7 @@ app.include_router(chat_router)
 @app.get("/")
 def root():
     return {"message": "AI RAG Chatbot API is running"}
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}

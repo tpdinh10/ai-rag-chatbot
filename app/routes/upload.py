@@ -17,18 +17,32 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 @router.post("/upload", response_model=UploadResponse)
 async def upload_pdf(file: UploadFile = File(...)):
-    if not file.filename.lower().endswith(".pdf"):
+    if not file.filename or not file.filename.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only PDF files are allowed.")
 
     unique_filename = f"{uuid4()}_{file.filename}"
     file_path = os.path.join(UPLOAD_DIR, unique_filename)
 
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-
     try:
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+
         extracted_text = extract_text_from_pdf(file_path)
+
+        if not extracted_text or not extracted_text.strip():
+            raise HTTPException(
+                status_code=400,
+                detail="No text could be extracted from this PDF."
+            )
+
         chunks = split_text_into_chunks(extracted_text)
+
+        if not chunks:
+            raise HTTPException(
+                status_code=400,
+                detail="No text chunks were created from this PDF."
+            )
+
         embedded_chunks = get_embeddings_for_chunks(chunks)
         save_to_faiss(embedded_chunks)
 
@@ -42,7 +56,14 @@ async def upload_pdf(file: UploadFile = File(...)):
             "stored_embeddings": len(embedded_chunks)
         }
 
+    except HTTPException:
+        raise
+
     except ValueError as e:
         raise HTTPException(status_code=500, detail=str(e))
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Processing failed: {str(e)}")
+
+    finally:
+        file.file.close()
