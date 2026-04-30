@@ -5,6 +5,12 @@ Build a backend AI system that answers questions based on uploaded documents usi
 Instead of relying only on pre-trained knowledge, the system retrieves relevant document content **using vector search and generates grounded responses, reducing hallucination**.
 
 ---
+## 🌐 Live Demo
+API: https://ai-rag-chatbot-odu3.onrender.com
+Swagger UI: https://ai-rag-chatbot-odu3.onrender.com/docs
+Health Check: https://ai-rag-chatbot-odu3.onrender.com/health
+
+👉 Live demo available — try it directly in your browser
 
 ## 🚀 Features
 
@@ -14,7 +20,8 @@ Instead of relying only on pre-trained knowledge, the system retrieves relevant 
 - 🧠 Generate embeddings using OpenAI API  
 - ⚡ Store and search vectors using FAISS  
 - 💬 Ask questions and get grounded AI answers  
-- 📚 Return source chunks for transparency  
+- 📚 Return source chunks for transparency
+- 🌐 Deployed backend API (Render)  
 
 ---
 
